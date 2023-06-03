@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:login_signup/login/shared/http_helper.dart';
+import 'package:login_signup/sample_ryan.dart';
 
 import 'authenticate.dart';
 
@@ -30,9 +31,19 @@ class _SigninScreenState extends State<SigninScreen> {
     });
   }
 
+  void navigateToHome(LoginResponse response) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => SampleMain(token: response.token)));
+  }
   void signIn() async {
     LoginResponse? response = await httpHelper.login(
         _usernameController.text, _passwordController.text);
+    if (response == null) {
+      return;
+    }
+    navigateToHome(response);
     print(response.token);
   }
   @override
