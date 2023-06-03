@@ -14,12 +14,24 @@ class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _roleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _imageUrlController = TextEditingController();
   bool _isButtonEnabled = false;
 
   @override
   void dispose() {
     _firstNameController.dispose();
     _lastNameController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
+    _phoneController.dispose();
+    _roleController.dispose();
+    _descriptionController.dispose();
+    _imageUrlController.dispose();
     super.dispose();
   }
 
@@ -34,21 +46,20 @@ class _SignupScreenState extends State<SignupScreen> {
     User user = User(
                 firstName: _firstNameController.text,
                 lastName: _lastNameController.text,
-                username: "sample",
-                password: "sample",
+                username: _usernameController.text,
+                password: _passwordController.text,
                 phone: "sample",
                 role: "sample",
                 description: "sample",
                 imageUrl: "sample",
     );
     SignupResponse? response = await httpHelper.signUp(user);
-    if (response != null) {
-      print(response.message);
-    }
+    print(response.message);
   }
   @override
   Widget build(BuildContext context) {
-    return Form(
+    return Scaffold(
+        body: Form(
       key: _formKey,
       onChanged: _validateForm,
       child: Column(
@@ -73,13 +84,32 @@ class _SignupScreenState extends State<SignupScreen> {
               return null;
             },
           ),
-          // Añadir más campos de texto según sea necesario
+          TextFormField(
+            controller: _usernameController,
+            decoration: const InputDecoration(labelText: 'User Name'),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your user name';
+              }
+              return null;
+            },
+          ),
+          TextFormField(
+            controller: _passwordController,
+            decoration: const InputDecoration(labelText: 'Password'),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your password';
+              }
+              return null;
+            },
+          ),
           ElevatedButton(
-            onPressed: _isButtonEnabled ? signUp: null,
+            onPressed: _isButtonEnabled ? signUp : null,
             child: const Text('Sign Up'),
           ),
         ],
       ),
-    );
+    ));
   }
 }
