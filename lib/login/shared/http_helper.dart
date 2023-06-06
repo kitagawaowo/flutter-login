@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../signin/authenticate.dart';
 class HttpHelper {
-  final String baseUrl = 'http://192.168.1.2/api/v1/users/';
+  final String baseUrl = 'https://zendriver.azurewebsites.net/api/v1/users/';
   //final String baseUrl = 'http://192.168.1.2/api/v1/users/';
 
   Future<LoginResponse> login(String name, String password) async {
