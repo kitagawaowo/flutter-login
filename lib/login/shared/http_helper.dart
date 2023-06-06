@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
 import '../signin/authenticate.dart';
 class HttpHelper {
   final String baseUrl = 'http://192.168.1.2/api/v1/users/';
+  //final String baseUrl = 'http://192.168.1.2/api/v1/users/';
 
   Future<LoginResponse> login(String name, String password) async {
     final url = '${baseUrl}sign-in';
@@ -15,12 +17,13 @@ class HttpHelper {
       'username': name,
       'password': password,
     }));
-    if (response.statusCode == 200) {
+    if (response.statusCode == HttpStatus.ok) {
       return LoginResponse.fromJson(json.decode(response.body));
+    } else if (response.statusCode == 500) {
+      throw Exception('Incorrect username or password');
     } else {
-      print(response.statusCode);
-      throw Exception(response.statusCode);
-      //throw Exception('Failed to login');
+      throw Exception('Failed to login');
+      //throw Exception('Server error');
     }
   }
 
@@ -31,12 +34,13 @@ class HttpHelper {
       headers: {'Content-Type': 'application/json'},
       body: json.encode(user.toJson()),
     );
-    if (response.statusCode == 200) {
+    if (response.statusCode == HttpStatus.ok) {
       return SignupResponse.fromJson(json.decode(response.body));
+    } else if (response.statusCode == HttpStatus.badRequest) {
+      throw Exception('Username already exists');
     } else {
-      print(response.statusCode);
-      throw Exception(response.statusCode);
-      //throw Exception('Failed to login');
+      throw Exception('Failed to sign up');
+      //throw Exception('Server error');
     }
   }
 }

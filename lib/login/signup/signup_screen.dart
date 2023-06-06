@@ -41,21 +41,62 @@ class _SignupScreenState extends State<SignupScreen> {
     });
   }
 
-
-  void signUp() async {
-    User user = User(
-                firstName: _firstNameController.text,
-                lastName: _lastNameController.text,
-                username: _usernameController.text,
-                password: _passwordController.text,
-                phone: "sample",
-                role: "sample",
-                description: "sample",
-                imageUrl: "sample",
-    );
-    SignupResponse? response = await httpHelper.signUp(user);
-    print(response.message);
+  void returnToSignIn(SignupResponse response) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Message'),
+            content: Text(response.message),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
   }
+  void signUp() async {
+    try {
+      User user = User(
+        firstName: _firstNameController.text,
+        lastName: _lastNameController.text,
+        username: _usernameController.text,
+        password: _passwordController.text,
+        phone: '-',
+        role: '-',
+        description: '-',
+        imageUrl: '-',
+      );
+      SignupResponse? response = await httpHelper.signUp(user);
+      returnToSignIn(response);
+    } catch (e) {
+      String message = e.toString().split(':')[1].trim();
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

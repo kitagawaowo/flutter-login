@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:login_signup/login/shared/http_helper.dart';
 import 'package:login_signup/sample_ryan.dart';
 
+import '../signup/signup_screen.dart';
 import 'authenticate.dart';
 
 class SigninScreen extends StatefulWidget {
@@ -37,15 +38,39 @@ class _SigninScreenState extends State<SigninScreen> {
         MaterialPageRoute(
             builder: (context) => SampleMain(token: response.token)));
   }
-  void signIn() async {
-    LoginResponse? response = await httpHelper.login(
-        _usernameController.text, _passwordController.text);
-    if (response == null) {
-      return;
-    }
-    navigateToHome(response);
-    print(response.token);
+
+  void navigateToSignup() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const SignupScreen()));
   }
+
+  void signIn() async {
+    try {
+      LoginResponse? response = await httpHelper.login(
+          _usernameController.text, _passwordController.text);
+      navigateToHome(response);
+    } catch (e) {
+      String message = e.toString().split(':')[1].trim();
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,6 +92,7 @@ class _SigninScreenState extends State<SigninScreen> {
           TextFormField(
             controller: _passwordController,
             decoration: const InputDecoration(labelText: 'Password'),
+            obscureText: true,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter your password';
@@ -76,6 +102,10 @@ class _SigninScreenState extends State<SigninScreen> {
           ),
           ElevatedButton(
             onPressed: _isButtonEnabled ? signIn: null,
+            child: const Text('Sign In'),
+          ),
+          ElevatedButton(
+            onPressed: navigateToSignup,
             child: const Text('Sign Up'),
           ),
         ],
